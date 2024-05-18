@@ -2,11 +2,9 @@ import os
 import json
 import random
 import tqdm
-import re
 import argparse
-import pandas as pd
 from collections import OrderedDict
-from gpt3_api import make_requests as make_gpt3_requests
+from mixtral_api import make_requests as make_api_requests
 from templates.clf_task_template import template_1
 
 
@@ -19,7 +17,6 @@ templates = {
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    # parser.add_argument("--template", type=str, default="template_1", help="Which template to use.")
     parser.add_argument(
         "--batch_dir",
         type=str,
@@ -32,15 +29,14 @@ def parse_args():
         help="if specified, only generate instance input for this many instructions",
     )
     parser.add_argument(
-        "--template", 
-        type=str, 
-        default="template_1", 
+        "--template",
+        type=str,
+        default="template_1",
         help="Which template to use. Currently only `template_1` is supported.",
     )
     parser.add_argument(
         "--engine",
         type=str,
-        default="davinci",
         help="The engine to use."
     )
     parser.add_argument(
@@ -52,7 +48,7 @@ def parse_args():
     parser.add_argument(
         "--api_key",
         type=str,
-        help="The API key to use. If not specified, the key will be read from the environment variable `OPENAI_API_KEY`."
+        help="The API key to use. If not specified, the key will be read from the environment variable."
     )
     parser.add_argument(
         "--organization",
@@ -70,7 +66,7 @@ if __name__ == '__main__':
         if args.num_instructions is not None:
             lines = lines[:args.num_instructions]
 
-    output_path = os.path.join(args.batch_dir, f"is_clf_or_not_{args.engine}_{args.template}.jsonl")
+    output_path = os.path.join(args.batch_dir, f"is_clf_or_not_{args.template}.jsonl")
     existing_requests = {}
     if os.path.exists(output_path):
         with open(output_path) as fin:
@@ -95,15 +91,14 @@ if __name__ == '__main__':
                         )
                     fout.write(json.dumps(data, ensure_ascii=False) + "\n")
             else:
-                # prefix = compose_prompt_prefix(human_written_tasks, batch[0]["instruction"], 8, 2)
                 prefix = templates[args.template]
                 prompts = [prefix + " " + d["instruction"].strip() + "\n" + "Is it classification?" for d in batch]
-                results = make_gpt3_requests(
+                results = make_api_requests(
                     engine=args.engine,
                     prompts=prompts,
                     max_tokens=3,
-                    temperature=0,
-                    top_p=0,
+                    temperature=0.1,
+                    top_p=0.1,
                     frequency_penalty=0,
                     presence_penalty=0,
                     stop_sequences=["\n", "Task"],
@@ -115,7 +110,7 @@ if __name__ == '__main__':
                 for i in range(len(batch)):
                     data = batch[i]
                     if results[i]["response"] is not None:
-                        data["is_classification"] = results[i]["response"]["choices"][0]["text"]
+                        data["is_classification"] = results[i]["response"]["choices"][0]["generated_text"]
                     else:
                         data["is_classification"] = ""
                     data = {

@@ -2,13 +2,10 @@ import os
 import json
 import random
 import tqdm
-import re
 import argparse
-import pandas as pd
 from collections import OrderedDict
-from gpt3_api import make_requests as make_gpt3_requests
+from mixtral_api import make_requests as make_api_requests
 from templates.instance_gen_template import output_first_template_for_clf, input_first_template_for_gen
-
 
 random.seed(42)
 
@@ -55,7 +52,6 @@ def parse_args():
     parser.add_argument(
         "--engine",
         type=str,
-        default="davinci",
         help="The engine to use."
     )
     parser.add_argument(
@@ -67,7 +63,7 @@ def parse_args():
     parser.add_argument(
         "--api_key",
         type=str,
-        help="The API key to use. If not specified, the key will be read from the environment variable OPENAI_API_KEY."
+        help="The API key to use. If not specified, the key will be read from the environment variable."
     )
     parser.add_argument(
         "--organization",
@@ -93,14 +89,14 @@ if __name__ == '__main__':
             tasks.append(data)
 
     task_clf_types = {}
-    with open(os.path.join(args.batch_dir, "is_clf_or_not_davinci_template_1.jsonl")) as fin:
+    with open(os.path.join(args.batch_dir, "is_clf_or_not_template_1.jsonl")) as fin:
         for line in fin:
             data = json.loads(line)
             task_clf_types[data["instruction"]] = data["is_classification"].strip() in ["Yes", "yes", "YES"]
 
     if args.classification_tasks_only:
         tasks = [task for task in tasks if task_clf_types[task["instruction"]]]
-    
+
     if args.generation_tasks_only:
         tasks = [task for task in tasks if not task_clf_types[task["instruction"]]]
 
@@ -125,9 +121,9 @@ if __name__ == '__main__':
                     data = existing_requests[d["instruction"]]
                     data = OrderedDict(
                         (k, data[k]) for k in \
-                            ["instruction", "raw_instances", "instance_metadata", "instruction_metadata", 
-                            "most_similar", "avg_similarity_score"]
-                        )
+                        ["instruction", "raw_instances", "instance_metadata", "instruction_metadata",
+                         "most_similar", "avg_similarity_score"]
+                    )
                     fout.write(json.dumps(data, ensure_ascii=False) + "\n")
             else:
                 prompts = []
@@ -138,13 +134,15 @@ if __name__ == '__main__':
                     else:
                         prompt = input_first_template_for_gen + " " + task["instruction"].strip() + "\n"
                         prompts.append(prompt)
-                results = make_gpt3_requests(
+                results = make_api_requests(
                     engine=args.engine,
                     prompts=prompts,
                     # because the clf template is longer, we need to decrease the max_tokens
                     max_tokens=300 if any(task_clf_types[task["instruction"]] for task in batch) else 350,
-                    temperature=0,
-                    top_p=0,
+                    # temperature=0,
+                    temperature=0.1,
+                    # top_p=0,
+                    top_p=0.1,
                     frequency_penalty=0,
                     presence_penalty=1.5,
                     stop_sequences=[f"Example {args.max_instances_to_generate + 1}", "Task:"],
@@ -157,13 +155,13 @@ if __name__ == '__main__':
                     data = batch[i]
                     data["instance_metadata"] = results[i]
                     if results[i]["response"] is not None:
-                        data["raw_instances"] = results[i]["response"]["choices"][0]["text"]
+                        data["raw_instances"] = results[i]["response"]["choices"][0]["generated_text"]
                     else:
                         data["raw_instances"] = ""
                     data = OrderedDict(
                         (k, data[k]) for k in \
-                            ["instruction", "raw_instances", "instance_metadata", "instruction_metadata", 
-                            "most_similar", "avg_similarity_score"]
-                        )
+                        ["instruction", "raw_instances", "instance_metadata", "instruction_metadata",
+                         "most_similar", "avg_similarity_score"]
+                    )
                     fout.write(json.dumps(data, ensure_ascii=False) + "\n")
             progress_bar.update(len(batch))

@@ -52,6 +52,91 @@ Here are the scripts for generating the data:
 ./scripts/prepare_for_finetuning.sh
 ```
 
+In the context of BDD and Mixtral8x7B-Instruct, the previous instructions are different. Here are the new command lines to generate new datasets from the two seeds:
+
+For the high quality seed:
+```bash
+# 1. Generate instructions from the seed
+batch_dir=high_quality_seed_data/data/api_generations
+python self_instruct/bootstrap_instructions.py \
+  --batch_dir ${batch_dir} \
+  --num_instructions_to_generate 100 \
+  --seed_tasks_path high_quality_seed_data/data/high_quality_seed_tasks/high_quality_seed_tasks.jsonl \
+  --engine "mistralai/Mixtral-8x7B-Instruct-v0.1"
+
+# 2. Identify whether the instruction represents a classification task or not
+batch_dir=high_quality_seed_data/data/api_generations
+python self_instruct/identify_clf_or_not.py \
+  --batch_dir ${batch_dir} \
+  --engine "mistralai/Mixtral-8x7B-Instruct-v0.1" \
+  --request_batch_size 5
+    
+# 3. Generate instances for each instruction
+batch_dir=high_quality_seed_data/data/api_generations
+python self_instruct/generate_instances.py \
+  --batch_dir ${batch_dir} \
+  --input_file machine_generated_instructions.jsonl \
+  --output_file machine_generated_instances.jsonl \
+  --max_instances_to_gen 5 \
+  --engine "mistralai/Mixtral-8x7B-Instruct-v0.1" \
+  --request_batch_size 5
+  
+# 4. Filtering, processing, and reformatting
+batch_dir=mixed_quality_seed_data/data/api_generations
+ python self_instruct/prepare_for_finetuning.py \
+    --instance_files ${batch_dir}/machine_generated_instances.jsonl \
+    --classification_type_files ${batch_dir}/is_clf_or_not_davinci_template_1.jsonl \
+    --output_dir ${batch_dir}/finetuning_data \
+    --include_seed_tasks \
+    --seed_tasks_path high_quality_seed_data/data/high_quality_seed_tasks/high_quality_seed_tasks.jsonl
+```
+All data relating to high quality seed can be found in the high_quality_seed_data folder.
+
+For the mixed quality seed:
+```bash
+# 1. Generate instructions from the seed
+batch_dir=mixed_quality_seed_data/data/api_generations
+python self_instruct/bootstrap_instructions.py \
+  --batch_dir ${batch_dir} \
+  --num_instructions_to_generate 100 \
+  --seed_tasks_path mixed_quality_seed_data/data/mixed_quality_seed_tasks/mixed_quality_seed_tasks.jsonl \
+  --engine "mistralai/Mixtral-8x7B-Instruct-v0.1"
+  
+# 2. Identify whether the instruction represents a classification task or not
+batch_dir=mixed_quality_seed_data/data/api_generations
+python self_instruct/identify_clf_or_not.py \
+  ----batch_dir ${batch_dir} \
+    --engine "mistralai/Mixtral-8x7B-Instruct-v0.1" \
+    --request_batch_size 5
+    
+# 3. Generate instances for each instruction
+batch_dir=mixed_quality_seed_data/data/api_generations
+python self_instruct/generate_instances.py \
+  --batch_dir ${batch_dir} \
+  --input_file machine_generated_instructions.jsonl \
+  --output_file machine_generated_instances.jsonl \
+  --max_instances_to_gen 5 \
+  --engine "mistralai/Mixtral-8x7B-Instruct-v0.1" \
+  --request_batch_size 5
+  
+# 4. Filtering, processing, and reformatting
+batch_dir=mixed_quality_seed_data/data/api_generations
+ python self_instruct/prepare_for_finetuning.py \
+    --instance_files ${batch_dir}/machine_generated_instances.jsonl \
+    --classification_type_files ${batch_dir}/is_clf_or_not_davinci_template_1.jsonl \
+    --output_dir ${batch_dir}/finetuning_data \
+    --include_seed_tasks \
+    --seed_tasks_path mixed_quality_seed_data/data/mixed_quality_seed_tasks/mixed_quality_seed_tasks.jsonl
+```
+All data relating to mixed quality seed can be found in the mixed_quality_seed_data folder.
+
+#### Data and results
+For each of the previous seed, the .jsonl file (as well as an .md version) can be found in the high_quality_seed_tasks folder.
+All the data generated at different stages can be found in the api_generations folder.
+The sample used to analyse the quality of the data generated can be found in the results_sample folder.
+
+The .csv files with the analyses of each sample can be found in the data results analyses folder.
+
 ## Citation
 
 If you use the Self-Instruct framework or data, feel free to cite us.
