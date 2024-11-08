@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this replication package, please cite it as below."
+authors:
+- family-names: "Galloy"
+  given-names: "Manon"
+- family-names: "Balfroid"
+  given-names: "Martin"
+  orcid: "https://orcid.org/0000-0002-1318-1184"
+- family-names: "Vanderose"
+  given-names: "Benoît"
+  orcid: "https://orcid.org/0000-0001-9752-0085"
+- family-names: "Devroey"
+  given-names: "Xavier"
+  orcid: "https://orcid.org/0000-0002-0831-7606"
+title: "SelfBehave: Generating a Behaviour-Driven Development Dataset Using the SELF-INSTRUCT Method"
+version: 1.0.2
+doi: 10.5281/zenodo.14050108
+date-released: 2024-11-08
+url: "https://github.com/snail-unamur/self-instruct"
