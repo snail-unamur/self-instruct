@@ -116,11 +116,16 @@ batch_dir=mixed_quality_seed_data/data/api_generations
 All data relating to mixed-quality seed can be found in the mixed_quality_seed_data folder.
 
 #### Data and results
+
 For each of the previous seed, the .jsonl file (as well as an .md version) can be found in the high_quality_seed_tasks or mixed_quality_seed_tasks folder.
 All the data generated at different stages can be found in the api_generations folder.
 The sample used to analyse the quality of the data generated can be found in the results_sample folder.
 
 The .csv files with the analyses of each sample can be found in the data results analyses folder.
+
+#### Manual analysis results
+
+Manual analysis results are available in the [results/](/results) folder. Please read [results/RaterGuide.md](/results/RaterGuide.md) for more information.
 
 ## Acknowledgements
 
