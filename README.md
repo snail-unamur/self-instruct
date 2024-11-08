@@ -1,5 +1,7 @@
 # Self-Instruct: Aligning LM with Self Generated Instructions
 
+[![DOI](https://zenodo.org/badge/802517442.svg)](https://doi.org/10.5281/zenodo.14050107)
+
 This repository contains code and data for SelfBehave, a method for generating a Behaviour-Driven Development dataset using the SELF-INSTRUCT method. This was inspired by [Self-Instruct paper](https://arxiv.org/abs/2212.10560), a method for aligning pretrained language models with instructions.
 
 ## Introduction
