@@ -122,18 +122,7 @@ The sample used to analyse the quality of the data generated can be found in the
 
 The .csv files with the analyses of each sample can be found in the data results analyses folder.
 
-## Citation
-
-If you use this version of Self-Instruct:
-```bibtex
-@mastersthesis{selfbehave,
-  author  = {Galloy, Manon},
-  title   = {SelfBehave: Generating a Behaviour-Driven Development Dataset Using the SELF-INSTRUCT Method},
-  school  = {UNamur},
-  year    = {2024},
-  month   = {May}
-}
-```
+## Acknowledgements
 
 Thanks to the authors of the Self-Instruct method for the great inspiration they brought to this work. If you want to cite the original authors of Self-Instruct:
 ```bibtex
