@@ -2,15 +2,14 @@
 
 ## Glossary
 
-- Seed Datasets: The datasets used for generation.  
-- Fruit Datasets: The generated datasets (not a standard term, but I thought it went well with the seed idea)
-- High-Quality: The scenario meets the “scenario-level” criteria Essential, Singular, Complete and Integrous  
-- Mixed-Quality: The scenario does not meet at least 1 scenario.
+- Seed Datasets: The datasets used for generation.
+- High-Quality: The scenario meets the “scenario-level” criteria Essential, Singular, Complete and Integrous 
+- Mixed-Quality: The scenario does not meet at least 1 criteria.
 
 ## Content
 
-- [HQFS/](HQFS/): High-Quality Fruit Scenario  
-- [MQFS/](HQFS/): Mixed-Quality Fruit Scenario
+- [HG/](HG/): High-Quality Seeded Generated Dataset
+- [MG/](MG/): Mixed-Quality Seeded Generated Dataset
 
 ## Criteria
 
