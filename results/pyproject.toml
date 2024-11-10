@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "self-behave"
+version = "0.1.0"
+description = ""
+authors = ["Martin Balfroid <martin.balfroid@unamur.be>"]
+readme = "README.md"
+packages = [{include = "self_behave"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Markdown = "^3.7"
+Pygments = "^2.18.0"
+pandas = "^2.2.3"
+scikit-learn = "^1.5.2"
+matplotlib = "^3.9.2"
+venny4py = "^1.0.3"
+jupyter = "^1.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
